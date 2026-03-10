@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Task Portal MVP</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Student Task Portal</h1>
+        <p>Paste an assignment or study task to get organized source guidance.</p>
+      </header>
+
+      <section class="input-panel">
+        <form id="task-form">
+          <label for="task-input">Assignment or study task</label>
+          <textarea id="task-input" name="task" rows="4" placeholder="Example: Write an essay on the New Deal" required></textarea>
+
+          <label for="documents">Upload course files / past assignments</label>
+          <input id="documents" name="documents" type="file" multiple />
+
+          <button type="submit">Generate Study Dashboard</button>
+        </form>
+      </section>
+
+      <section id="status" class="status hidden"></section>
+
+      <section id="results" class="results hidden">
+        <p class="warning" id="warning-text"></p>
+
+        <div class="grid" id="result-grid"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
