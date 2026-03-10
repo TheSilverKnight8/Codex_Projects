@@ -1,0 +1,60 @@
+# AGENTS.md
+
+## Project intent
+This repository is a hackathon MVP for a student task portal.
+
+The app accepts a student task, retrieves relevant course materials, past assignments, and web sources, then displays them in an organized dashboard.
+
+## Stack
+Frontend: HTML, CSS, JavaScript
+Backend: Node.js with Express
+
+## Priorities
+1. Working MVP over polish
+2. Clear architecture over cleverness
+3. Readable code over abstraction
+4. Simple UI over framework complexity
+
+## Build order
+1. Static frontend
+2. Express backend
+3. Mock JSON response
+4. File upload flow
+5. OpenAI integration
+6. UI polish
+
+## UI requirements
+The UI should have:
+1. Task input area
+2. Submit button
+3. Upload area for documents
+4. Results sections:
+   - Best matches
+   - Course materials
+   - Past assignments
+   - Online sources
+   - Suggested plan
+
+## Code rules
+1. Keep files reasonably small
+2. Use descriptive names
+3. Add comments for non obvious logic
+4. Do not add TypeScript unless explicitly requested
+5. Do not add React unless explicitly requested
+6. Do not add a database unless needed for MVP
+7. Use mock data where integration is unfinished
+
+## OpenAI integration intent
+Use the Responses API as the main orchestration layer.
+Use file search for uploaded materials.
+Use web search for outside sources.
+Keep retrieval and rendering separate.
+
+## Deliverables
+1. README
+2. .env.example
+3. package.json
+4. server.js or app.js
+5. public folder for frontend assets
+6. routes for task processing
+7. mock data fallback if API keys are absent
