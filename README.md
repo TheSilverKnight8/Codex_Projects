@@ -1,5 +1,67 @@
 # Student Task Portal MVP
 
+A presentation-ready hackathon MVP that helps students turn a broad assignment prompt into a focused study dashboard.
+
+---
+
+## 1) Elevator pitch
+
+**Student Task Portal** is a lightweight web app where a student enters a task (for example, *"Write an essay on the New Deal"*), optionally uploads class documents, and receives a structured dashboard with:
+
+- Best matches
+- Course materials
+- Past assignments
+- Reputable online sources
+- Suggested study plan
+
+The product goal is to reduce time spent searching and increase time spent learning.
+
+---
+
+## 2) Problem this solves
+
+Students often start with an unclear prompt and scattered resources. They need to quickly answer:
+
+1. What should I review first?
+2. Which class materials are relevant?
+3. Which external sources are trustworthy?
+
+This MVP solves that by centralizing retrieval and showing organized, source-labeled results in one place.
+
+---
+
+## 3) Demo flow (what to show in a presentation)
+
+1. Open the homepage.
+2. Paste a task prompt.
+3. Upload course notes or prior assignments.
+4. Click **Generate Study Dashboard**.
+5. Walk through each result section.
+6. Highlight the academic-integrity warning (guidance only, no copying).
+
+---
+
+## 4) Architecture at a glance
+
+### Frontend (Vanilla HTML/CSS/JS)
+- Collects task input + files
+- Sends multipart request to backend
+- Renders categorized result cards from JSON
+
+### Backend (Node.js + Express)
+- Accepts `POST /api/process-task`
+- Stores uploaded files via Multer
+- Runs retrieval orchestration service
+- Returns structured JSON payload to UI
+
+### Retrieval service
+- **Mock mode** for offline/demo reliability
+- **OpenAI mode** scaffold using Responses API + web search tool
+- Normalizes online source links to be task-specific (avoids generic homepage links)
+
+---
+
+## 5) Codebase walkthrough
 Hackathon-ready MVP web app that helps students organize what to review for an assignment or quiz.
 
 ## What it does

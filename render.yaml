@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: student-task-portal
+    runtime: node
+    plan: free
+    autoDeploy: true
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.21.1
+      - key: USE_MOCK_DATA
+        value: "true"
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: OPENAI_API_KEY
+        sync: false
