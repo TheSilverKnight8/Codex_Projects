@@ -1,0 +1,103 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f6fb;
+  color: #1b1d24;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+header h1 {
+  margin-bottom: 8px;
+}
+
+.input-panel,
+.results {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+textarea,
+input[type='file'],
+button {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+textarea {
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #ccd2e0;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  background: #3457f0;
+  color: white;
+  font-weight: 700;
+  padding: 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2345d8;
+}
+
+.status {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #eef2ff;
+}
+
+.warning {
+  background: #fff6df;
+  border: 1px solid #ffe1a8;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid #e2e8f2;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fbfcff;
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+.source {
+  font-size: 0.85rem;
+  color: #5c6785;
+}
+
+.hidden {
+  display: none;
+}
