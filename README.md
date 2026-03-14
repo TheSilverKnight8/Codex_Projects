@@ -1,90 +1,193 @@
 # Student Task Portal MVP
 
-Hackathon-ready MVP web app that helps students organize what to review for an assignment or quiz.
+A presentation-ready hackathon MVP that helps students turn a broad assignment prompt into a focused study dashboard.
 
-## What it does
+---
 
-A student enters a task such as:
-- "Write an essay on the New Deal"
-- "Study for a chemistry quiz on gas laws"
+## 1) Elevator pitch
 
-The app returns:
-1. Best matches
-2. Course materials
-3. Past assignments
-4. Reputable online sources
-5. Suggested study plan
+**Student Task Portal** is a lightweight web app where a student enters a task (for example, *"Write an essay on the New Deal"*), optionally uploads class documents, and receives a structured dashboard with:
 
-## Tech stack
+- Best matches
+- Course materials
+- Past assignments
+- Reputable online sources
+- Suggested study plan
 
-- Frontend: HTML, CSS, vanilla JavaScript
-- Backend: Node.js + Express
-- Upload handling: Multer
-- Optional orchestration: OpenAI Responses API
+The product goal is to reduce time spent searching and increase time spent learning.
 
-## Folder structure
+---
+
+## 2) Problem this solves
+
+Students often start with an unclear prompt and scattered resources. They need to quickly answer:
+
+1. What should I review first?
+2. Which class materials are relevant?
+3. Which external sources are trustworthy?
+
+This MVP solves that by centralizing retrieval and showing organized, source-labeled results in one place.
+
+---
+
+## 3) Demo flow (what to show in a presentation)
+
+1. Open the homepage.
+2. Paste a task prompt.
+3. Upload course notes or prior assignments.
+4. Click **Generate Study Dashboard**.
+5. Walk through each result section.
+6. Highlight the academic-integrity warning (guidance only, no copying).
+
+---
+
+## 4) Architecture at a glance
+
+### Frontend (Vanilla HTML/CSS/JS)
+- Collects task input + files
+- Sends multipart request to backend
+- Renders categorized result cards from JSON
+
+### Backend (Node.js + Express)
+- Accepts `POST /api/process-task`
+- Stores uploaded files via Multer
+- Runs retrieval orchestration service
+- Returns structured JSON payload to UI
+
+### Retrieval service
+- **Mock mode** for offline/demo reliability
+- **OpenAI mode** scaffold using Responses API + web search tool
+- Normalizes online source links to be task-specific (avoids generic homepage links)
+
+---
+
+## 5) Codebase walkthrough
 
 ```text
 .
 ├── public/
-│   ├── app.js
-│   ├── index.html
-│   └── styles.css
+│   ├── index.html        # UI layout and sections
+│   ├── styles.css        # Styling for cards, layout, warning, status
+│   └── app.js            # Form submit, API call, render logic
 ├── routes/
-│   └── taskRoutes.js
+│   └── taskRoutes.js     # POST /api/process-task + upload middleware
 ├── services/
-│   └── retrievalService.js
-├── uploads/
-├── .env.example
-├── package.json
-├── README.md
-└── server.js
+│   └── retrievalService.js # Mock/OpenAI retrieval orchestration
+├── uploads/              # Uploaded files storage (gitkept)
+├── server.js             # Express app entrypoint and static serving
+├── package.json          # Scripts + dependencies
+├── .env.example          # Environment variable template
+└── README.md
 ```
 
-## Setup
+### Responsibilities by file
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Create env file:
-   ```bash
-   cp .env.example .env
-   ```
-3. Start server:
-   ```bash
-   npm start
-   ```
-4. Open:
-   ```
-   http://localhost:3000
-   ```
+- `server.js` initializes Express, mounts routes, and serves frontend assets.
+- `routes/taskRoutes.js` validates input, handles file uploads, and calls the retrieval layer.
+- `services/retrievalService.js` produces the dashboard payload (`mock` or `openai` mode).
+- `public/app.js` maps backend JSON to UI cards per section.
 
-## API
+---
 
-### `POST /api/process-task`
-Multipart form fields:
+## 6) API contract
+
+### Endpoint
+`POST /api/process-task`
+
+### Request
+`multipart/form-data`
 - `task` (required string)
 - `documents` (optional file array)
 
-Returns structured JSON:
-- `task`
-- `mode` (`mock` or `openai`)
-- `warning`
-- `sections` object:
-  - `bestMatches`
-  - `courseMaterials`
-  - `pastAssignments`
-  - `onlineSources`
-  - `suggestedStudyPlan`
-- `adapters` status object
+### Response shape
 
-## OpenAI wiring notes
+```json
+{
+  "task": "Study for a chemistry quiz on gas laws",
+  "mode": "mock",
+  "warning": "Sources are for guidance...",
+  "sections": {
+    "bestMatches": [],
+    "courseMaterials": [],
+    "pastAssignments": [],
+    "onlineSources": [],
+    "suggestedStudyPlan": []
+  },
+  "adapters": {
+    "localUploadSearch": "enabled-mock",
+    "openAIFileSearch": "todo",
+    "openAIWebSearch": "todo"
+  }
+}
+```
 
-- If `OPENAI_API_KEY` is missing or `USE_MOCK_DATA=true`, the app uses mock retrieval data.
-- `services/retrievalService.js` includes TODO markers for full OpenAI file search wiring (vector store + file indexing).
-- Web search tool is scaffolded via Responses API when mock mode is disabled.
+---
 
-## MVP guardrail
+## 7) Local setup
 
-The UI includes a warning that source suggestions are for guidance only and should not be copied as final coursework.
+1. Install dependencies
+   ```bash
+   npm install
+   ```
+2. Copy env template
+   ```bash
+   cp .env.example .env
+   ```
+3. Optional: force deterministic demo mode
+   ```bash
+   echo "USE_MOCK_DATA=true" >> .env
+   ```
+4. Start server
+   ```bash
+   npm start
+   ```
+5. Open `http://localhost:3000`
+
+---
+
+## 8) Environment variables
+
+From `.env.example`:
+
+- `PORT` — server port (default `3000`)
+- `OPENAI_API_KEY` — enables OpenAI mode when present
+- `OPENAI_MODEL` — optional model override
+- `USE_MOCK_DATA` — defaults to mock unless set to `false`
+
+---
+
+## 9) OpenAI integration status
+
+Current implementation intentionally prioritizes MVP speed:
+
+- ✅ Responses API scaffold present
+- ✅ Web search tool scaffold present
+- ⚠️ File-search/vector-store indexing is marked TODO for next iteration
+
+This allows reliable hackathon demos now, with a clear path to stronger retrieval later.
+
+---
+
+## 10) Academic integrity guardrail
+
+The UI and payload include a clear warning:
+
+> Sources are guidance for studying. Students should not copy generated output as final coursework.
+
+This keeps the product aligned with educational best practices.
+
+---
+
+## 11) Roadmap (post-hackathon)
+
+1. Implement full OpenAI file-search indexing for uploaded materials.
+2. Add citation quality scoring + better source deduplication.
+3. Improve reranking across local + web results.
+4. Add result persistence per student session.
+5. Add lightweight test coverage for route and retrieval service.
+
+---
+
+## 12) One-sentence summary for judges
+
+**Student Task Portal transforms a vague homework prompt into an actionable, source-labeled study plan by combining uploaded class materials and online references in a single clean dashboard.**
