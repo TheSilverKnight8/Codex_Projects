@@ -62,155 +62,91 @@ This MVP solves that by centralizing retrieval and showing organized, source-lab
 ---
 
 ## 5) Codebase walkthrough
+Hackathon-ready MVP web app that helps students organize what to review for an assignment or quiz.
+
+## What it does
+
+A student enters a task such as:
+- "Write an essay on the New Deal"
+- "Study for a chemistry quiz on gas laws"
+
+The app returns:
+1. Best matches
+2. Course materials
+3. Past assignments
+4. Reputable online sources
+5. Suggested study plan
+
+## Tech stack
+
+- Frontend: HTML, CSS, vanilla JavaScript
+- Backend: Node.js + Express
+- Upload handling: Multer
+- Optional orchestration: OpenAI Responses API
+
+## Folder structure
 
 ```text
 .
 ├── public/
-│   ├── index.html        # UI layout and sections
-│   ├── styles.css        # Styling for cards, layout, warning, status
-│   └── app.js            # Form submit, API call, render logic
+│   ├── app.js
+│   ├── index.html
+│   └── styles.css
 ├── routes/
-│   └── taskRoutes.js     # POST /api/process-task + upload middleware
+│   └── taskRoutes.js
 ├── services/
-│   └── retrievalService.js # Mock/OpenAI retrieval orchestration
-├── uploads/              # Uploaded files storage (gitkept)
-├── server.js             # Express app entrypoint and static serving
-├── package.json          # Scripts + dependencies
-├── .env.example          # Environment variable template
-└── README.md
+│   └── retrievalService.js
+├── uploads/
+├── .env.example
+├── package.json
+├── README.md
+└── server.js
 ```
 
-### Responsibilities by file
+## Setup
 
-- `server.js` initializes Express, mounts routes, and serves frontend assets.
-- `routes/taskRoutes.js` validates input, handles file uploads, and calls the retrieval layer.
-- `services/retrievalService.js` produces the dashboard payload (`mock` or `openai` mode).
-- `public/app.js` maps backend JSON to UI cards per section.
-
----
-
-## 6) API contract
-
-### Endpoint
-`POST /api/process-task`
-
-### Request
-`multipart/form-data`
-- `task` (required string)
-- `documents` (optional file array)
-
-### Response shape
-
-```json
-{
-  "task": "Study for a chemistry quiz on gas laws",
-  "mode": "mock",
-  "warning": "Sources are for guidance...",
-  "sections": {
-    "bestMatches": [],
-    "courseMaterials": [],
-    "pastAssignments": [],
-    "onlineSources": [],
-    "suggestedStudyPlan": []
-  },
-  "adapters": {
-    "localUploadSearch": "enabled-mock",
-    "openAIFileSearch": "todo",
-    "openAIWebSearch": "todo"
-  }
-}
-```
-
----
-
-
-## 7) Public link deployment (no local clone required)
-
-To make the app accessible by URL for anyone (without cloning/running locally), deploy to **Render** using the included `render.yaml`.
-
-### Deploy steps (5–10 minutes)
-
-1. Push this repo to GitHub.
-2. In Render, choose **New + → Blueprint**.
-3. Connect your GitHub repo.
-4. Render will detect `render.yaml` and create the web service.
-5. Set secrets in Render dashboard:
-   - `OPENAI_API_KEY` (optional; omit for mock mode)
-6. Click **Apply** / **Deploy**.
-7. Share the generated Render URL, e.g.:
-   - `https://student-task-portal.onrender.com`
-
-### Why this satisfies “accessible via link”
-
-Once deployed, users can open the Render URL directly in a browser and use the app immediately—no local setup required.
-
----
-
-## 8) Local setup
-
-1. Install dependencies
+1. Install dependencies:
    ```bash
    npm install
    ```
-2. Copy env template
+2. Create env file:
    ```bash
    cp .env.example .env
    ```
-3. Optional: force deterministic demo mode
-   ```bash
-   echo "USE_MOCK_DATA=true" >> .env
-   ```
-4. Start server
+3. Start server:
    ```bash
    npm start
    ```
-5. Open `http://localhost:3000`
+4. Open:
+   ```
+   http://localhost:3000
+   ```
 
----
+## API
 
-## 9) Environment variables
+### `POST /api/process-task`
+Multipart form fields:
+- `task` (required string)
+- `documents` (optional file array)
 
-From `.env.example`:
+Returns structured JSON:
+- `task`
+- `mode` (`mock` or `openai`)
+- `warning`
+- `sections` object:
+  - `bestMatches`
+  - `courseMaterials`
+  - `pastAssignments`
+  - `onlineSources`
+  - `suggestedStudyPlan`
+- `adapters` status object
 
-- `PORT` — server port (default `3000`)
-- `OPENAI_API_KEY` — enables OpenAI mode when present
-- `OPENAI_MODEL` — optional model override
-- `USE_MOCK_DATA` — defaults to mock unless set to `false`
+## OpenAI wiring notes
 
----
+- If `OPENAI_API_KEY` is missing or `USE_MOCK_DATA=true`, the app uses mock retrieval data.
+- `services/retrievalService.js` includes TODO markers for full OpenAI file search wiring (vector store + file indexing).
+- Web search tool is scaffolded via Responses API when mock mode is disabled.
 
-## 10) OpenAI integration status
+## MVP guardrail
 
-Current implementation intentionally prioritizes MVP speed:
-
-- ✅ Responses API scaffold present
-- ✅ Web search tool scaffold present
-- ⚠️ File-search/vector-store indexing is marked TODO for next iteration
-
-This allows reliable hackathon demos now, with a clear path to stronger retrieval later.
-
----
-
-## 11) Academic integrity guardrail
-
-The UI and payload include a clear warning:
-
-> Sources are guidance for studying. Students should not copy generated output as final coursework.
-
-This keeps the product aligned with educational best practices.
-
----
-
-## 12) Roadmap (post-hackathon)
-
-1. Implement full OpenAI file-search indexing for uploaded materials.
-2. Add citation quality scoring + better source deduplication.
-3. Improve reranking across local + web results.
-4. Add result persistence per student session.
-5. Add lightweight test coverage for route and retrieval service.
-
----
-
-## 13) One-sentence summary for judges
-
-**Student Task Portal transforms a vague homework prompt into an actionable, source-labeled study plan by combining uploaded class materials and online references in a single clean dashboard.**
+The UI includes a warning that source suggestions are for guidance only and should not be copied as final coursework.

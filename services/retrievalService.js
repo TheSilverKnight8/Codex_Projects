@@ -5,80 +5,6 @@ const shouldUseMock = process.env.USE_MOCK_DATA !== 'false';
 
 const client = hasOpenAIKey ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 
-function isHomepageLink(urlValue) {
-  if (!urlValue) {
-    return true;
-  }
-
-  try {
-    const parsed = new URL(urlValue);
-    const hasRootPath = !parsed.pathname || parsed.pathname === '/';
-    const hasNoSearch = !parsed.search;
-    const hasNoHash = !parsed.hash;
-
-    return hasRootPath && hasNoSearch && hasNoHash;
-  } catch (_error) {
-    return true;
-  }
-}
-
-function buildTopicSearchLink(baseDomain, task) {
-  const encodedTask = encodeURIComponent(task);
-
-  if (baseDomain.includes('khanacademy.org')) {
-    return `https://www.khanacademy.org/search?page_search_query=${encodedTask}`;
-  }
-
-  if (baseDomain.includes('britannica.com')) {
-    return `https://www.britannica.com/search?query=${encodedTask}`;
-  }
-
-  if (baseDomain.includes('wikipedia.org')) {
-    return `https://en.wikipedia.org/wiki/Special:Search?search=${encodedTask}`;
-  }
-
-  if (baseDomain.includes('history.com')) {
-    return `https://www.history.com/search?query=${encodedTask}`;
-  }
-
-  return `https://${baseDomain}/search?q=${encodedTask}`;
-}
-
-function normalizeOnlineSources(onlineSources, task) {
-  return (onlineSources || []).map((source) => {
-    const sourceLabel = String(source.sourceLabel || '').toLowerCase();
-    const title = String(source.title || '').toLowerCase();
-    const link = source.link;
-
-    if (!isHomepageLink(link)) {
-      return source;
-    }
-
-    let baseDomain = 'www.google.com';
-
-    if (sourceLabel.includes('khan') || title.includes('khan')) {
-      baseDomain = 'www.khanacademy.org';
-    } else if (sourceLabel.includes('britannica') || title.includes('britannica')) {
-      baseDomain = 'www.britannica.com';
-    } else if (sourceLabel.includes('wikipedia') || title.includes('wikipedia')) {
-      baseDomain = 'en.wikipedia.org';
-    } else if (sourceLabel.includes('history.com') || title.includes('history.com')) {
-      baseDomain = 'www.history.com';
-    } else if (link) {
-      try {
-        baseDomain = new URL(link).hostname;
-      } catch (_error) {
-        baseDomain = 'www.google.com';
-      }
-    }
-
-    return {
-      ...source,
-      link: buildTopicSearchLink(baseDomain, task)
-    };
-  });
-}
-
 function buildMockResponse(task, uploadedFiles) {
   const fileCards = uploadedFiles.map((file, index) => ({
     id: `uploaded-${index + 1}`,
@@ -87,30 +13,6 @@ function buildMockResponse(task, uploadedFiles) {
     snippet: 'Candidate local reference from your uploaded course materials.',
     link: file.url
   }));
-
-  const onlineSources = normalizeOnlineSources(
-    [
-      {
-        title: 'Khan Academy lesson search',
-        sourceLabel: 'Reputable educational source',
-        snippet: 'Topic-specific results for instructional videos and exercises.',
-        link: 'https://www.khanacademy.org'
-      },
-      {
-        title: 'Encyclopaedia Britannica topic search',
-        sourceLabel: 'Reference source',
-        snippet: 'Topic-specific encyclopedia entries for factual grounding.',
-        link: 'https://www.britannica.com'
-      },
-      {
-        title: 'Wikipedia topic search',
-        sourceLabel: 'Background context',
-        snippet: 'Use for quick orientation, then verify against class materials.',
-        link: 'https://en.wikipedia.org'
-      }
-    ],
-    task
-  );
 
   return {
     task,
@@ -145,7 +47,20 @@ function buildMockResponse(task, uploadedFiles) {
           link: null
         }
       ],
-      onlineSources,
+      onlineSources: [
+        {
+          title: 'Khan Academy',
+          sourceLabel: 'Reputable educational source',
+          snippet: 'Use for concept refreshers and practice-oriented explanations.',
+          link: 'https://www.khanacademy.org'
+        },
+        {
+          title: 'Encyclopaedia Britannica',
+          sourceLabel: 'Reference source',
+          snippet: 'Use for historical and factual summaries to anchor your own writing.',
+          link: 'https://www.britannica.com'
+        }
+      ],
       suggestedStudyPlan: [
         'Review top 2 best matches and identify key terms.',
         'Skim relevant course materials and highlight evidence you can cite.',
@@ -184,7 +99,7 @@ async function processTask(task, uploadedFiles) {
       {
         role: 'system',
         content:
-          'You are a study assistant. Return strict JSON with keys: bestMatches, courseMaterials, pastAssignments, onlineSources, suggestedStudyPlan. For onlineSources, include deep links (specific article or search results URL for the task), never generic site homepages.'
+          'You are a study assistant. Return strict JSON with keys: bestMatches, courseMaterials, pastAssignments, onlineSources, suggestedStudyPlan.'
       },
       {
         role: 'user',
@@ -224,10 +139,7 @@ async function processTask(task, uploadedFiles) {
     mode: 'openai',
     warning:
       'Sources are for guidance. Do not copy responses directly into final coursework. Use your own analysis and writing.',
-    sections: {
-      ...parsed,
-      onlineSources: normalizeOnlineSources(parsed.onlineSources, task)
-    },
+    sections: parsed,
     adapters: {
       localUploadSearch: uploadedFiles.length ? 'enabled-basic' : 'no-files',
       openAIFileSearch: 'todo',
