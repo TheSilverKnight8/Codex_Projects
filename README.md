@@ -123,7 +123,30 @@ This MVP solves that by centralizing retrieval and showing organized, source-lab
 
 ---
 
-## 7) Local setup
+
+## 7) Public link deployment (no local clone required)
+
+To make the app accessible by URL for anyone (without cloning/running locally), deploy to **Render** using the included `render.yaml`.
+
+### Deploy steps (5–10 minutes)
+
+1. Push this repo to GitHub.
+2. In Render, choose **New + → Blueprint**.
+3. Connect your GitHub repo.
+4. Render will detect `render.yaml` and create the web service.
+5. Set secrets in Render dashboard:
+   - `OPENAI_API_KEY` (optional; omit for mock mode)
+6. Click **Apply** / **Deploy**.
+7. Share the generated Render URL, e.g.:
+   - `https://student-task-portal.onrender.com`
+
+### Why this satisfies “accessible via link”
+
+Once deployed, users can open the Render URL directly in a browser and use the app immediately—no local setup required.
+
+---
+
+## 8) Local setup
 
 1. Install dependencies
    ```bash
@@ -145,7 +168,7 @@ This MVP solves that by centralizing retrieval and showing organized, source-lab
 
 ---
 
-## 8) Environment variables
+## 9) Environment variables
 
 From `.env.example`:
 
@@ -156,7 +179,7 @@ From `.env.example`:
 
 ---
 
-## 9) OpenAI integration status
+## 10) OpenAI integration status
 
 Current implementation intentionally prioritizes MVP speed:
 
@@ -168,7 +191,7 @@ This allows reliable hackathon demos now, with a clear path to stronger retrieva
 
 ---
 
-## 10) Academic integrity guardrail
+## 11) Academic integrity guardrail
 
 The UI and payload include a clear warning:
 
@@ -178,7 +201,7 @@ This keeps the product aligned with educational best practices.
 
 ---
 
-## 11) Roadmap (post-hackathon)
+## 12) Roadmap (post-hackathon)
 
 1. Implement full OpenAI file-search indexing for uploaded materials.
 2. Add citation quality scoring + better source deduplication.
@@ -188,6 +211,6 @@ This keeps the product aligned with educational best practices.
 
 ---
 
-## 12) One-sentence summary for judges
+## 13) One-sentence summary for judges
 
 **Student Task Portal transforms a vague homework prompt into an actionable, source-labeled study plan by combining uploaded class materials and online references in a single clean dashboard.**
