@@ -1,5 +1,7 @@
 # Student Task Portal MVP
 
+https://student-task-portal-wru2.onrender.com
+
 A presentation-ready hackathon MVP that helps students turn a broad assignment prompt into a focused study dashboard.
 
 ---
